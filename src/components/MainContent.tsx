@@ -1,82 +1,24 @@
 import { Tally3 } from "lucide-react"
-import { useFilter } from "../context/FilterContext"
 import { useState } from "react"
 import useProduct from "../hooks/useFetchProduct"
+import usePagination from "../hooks/usePagination"
+import useGetFilteredProduct from "../hooks/useGetFilteredProduct"
 import Card from "./Card"
 
 const MainContent = () => {
-  const { products, currentPage, setCurrentPage, itemsPerPage } = useProduct()
-  const { searchQuery, selectedCategory, minPrice, maxPrice } = useFilter()
+  const { currentPage, setCurrentPage, itemsPerPage } = useProduct()
   const [filter, setFilter] = useState("all")
   const [dropdownOpen, setDropdownOpen] = useState(false)
-
-  const getFilteredProducts = () => {
-    let filteredProducts = products
-
-    if (selectedCategory) {
-      filteredProducts = filteredProducts.filter(
-        (product) => product.category === selectedCategory
-      )
-    }
-
-    if (minPrice !== undefined) {
-      filteredProducts = filteredProducts.filter(
-        (product) => product.price >= minPrice
-      )
-    }
-
-    if (maxPrice !== undefined) {
-      filteredProducts = filteredProducts.filter(
-        (product) => product.price <= maxPrice
-      )
-    }
-
-    if (searchQuery) {
-      filteredProducts = filteredProducts.filter((product) =>
-        product.title.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    }
-
-    switch (filter) {
-      case "expensive":
-        return filteredProducts.sort((a, b) => b.price - a.price)
-      case "cheap":
-        return filteredProducts.sort((a, b) => a.price - b.price)
-      case "popular":
-        return filteredProducts.sort((a, b) => b.rating - a.rating)
-      default:
-        return filteredProducts
-    }
-  }
+  const filteredProducts = useGetFilteredProduct(filter)
 
   const totalProducts = 100
   const totalPages = Math.ceil(totalProducts / itemsPerPage)
-  const filteredProducts = getFilteredProducts()
+  const paginationRange = usePagination({ currentPage, totalPages })
 
   const handlePageChange = (page: number) => {
     if (page > 0 && page <= totalPages) {
       setCurrentPage(page)
     }
-  }
-
-  const getPaginationButtons = () => {
-    const buttons: number[] = []
-    let startPage = Math.max(1, currentPage - 2)
-    let endPage = Math.min(totalPages, currentPage + 2)
-
-    if (currentPage - 2 < 1) {
-      endPage = Math.min(totalPages, endPage + (2 - currentPage - 1))
-    }
-
-    if (currentPage + 2 > totalPages) {
-      startPage = Math.min(1, startPage - (2 - totalPages - currentPage))
-    }
-
-    for (let page = startPage; page <= endPage; page++) {
-      buttons.push(page)
-    }
-
-    return buttons
   }
 
   return (
@@ -143,7 +85,7 @@ const MainContent = () => {
 
           <div className='flex flex-wrap justify-center'>
             {/* Pagination button */}
-            {getPaginationButtons().map((page) => (
+            {paginationRange.map((page) => (
               <button
                 key={page}
                 onClick={() => handlePageChange(page)}
