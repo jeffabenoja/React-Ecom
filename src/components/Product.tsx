@@ -11,11 +11,9 @@ interface Product {
   images: string[]
 }
 
-const Product = () => {
+const useProduct = () => {
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
   const [product, setProduct] = useState<Product | null>(null)
-
   useEffect(() => {
     if (id) {
       axios
@@ -29,8 +27,19 @@ const Product = () => {
     }
   }, [id])
 
+  return [product] as const
+}
+
+const Product = () => {
+  const [product] = useProduct()
+  const navigate = useNavigate()
+
   if (!product) {
-    return <h1>Loading...</h1>
+    return (
+      <div className='w-[60%] flex justify-center items-center'>
+        <h1 className='text-2xl'>Loading...</h1>
+      </div>
+    )
   }
 
   return (
