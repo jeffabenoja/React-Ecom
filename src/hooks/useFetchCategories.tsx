@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
-import { FetchResponse } from "../types/Product"
+import axios from "axios"
+import { FetchResponse } from "../utils/ProductTypes"
 
 const useFetchCategories = () => {
   const [categories, setCategories] = useState<string[]>([])
@@ -7,23 +8,21 @@ const useFetchCategories = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch("https://dummyjson.com/products")
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`)
-        }
-        const data: FetchResponse = await response.json()
+        const response = await axios.get<FetchResponse>(
+          "https://dummyjson.com/products"
+        )
 
         // Check if `products` exists
-        if (!data.products) {
+        if (!response.data.products) {
           throw new Error("`products` property is missing in the API response.")
         }
 
         const uniqueCategories = Array.from(
-          new Set(data.products.map((product) => product.category))
+          new Set(response.data.products.map((product) => product.category))
         )
         setCategories(uniqueCategories)
       } catch (error: any) {
-        console.error("Error fetching categories:", error)
+        console.error("Error fetching categories:", error.message || error)
       }
     }
 
