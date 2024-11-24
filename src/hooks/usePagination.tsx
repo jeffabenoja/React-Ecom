@@ -27,7 +27,7 @@ const usePagination = ({
     }
 
     return result
-  }, [currentPage, totalPages]) // Recalculate only if currentPage or totalPages changes
+  }, [currentPage, totalPages])
 
   return buttons
 }

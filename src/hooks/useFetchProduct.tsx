@@ -5,6 +5,7 @@ import { useFilter } from "../context/FilterContext"
 const useProduct = () => {
   const { keyword } = useFilter()
   const [products, setProducts] = useState<any[]>([])
+  const [totalProducts, setTotalProducts] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 12
 
@@ -21,6 +22,7 @@ const useProduct = () => {
       try {
         const response = await axios.get(url)
         setProducts(response.data.products)
+        setTotalProducts(response.data.total || 100)
       } catch (error) {
         console.error("Error fetching products:", error)
       }
@@ -31,6 +33,7 @@ const useProduct = () => {
 
   return {
     products,
+    totalProducts,
     currentPage,
     setCurrentPage,
     itemsPerPage,

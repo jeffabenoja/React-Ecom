@@ -1,17 +1,29 @@
 import { Tally3 } from "lucide-react"
 import { useState } from "react"
+import { useFilter } from "../context/FilterContext"
 import useProduct from "../hooks/useFetchProduct"
 import usePagination from "../hooks/usePagination"
-import useGetFilteredProduct from "../hooks/useGetFilteredProduct"
+import useFilteredProducts from "../hooks/useFilteredProduct"
 import Card from "./Card"
 
 const MainContent = () => {
-  const { currentPage, setCurrentPage, itemsPerPage } = useProduct()
+  const { searchQuery, selectedCategory, minPrice, maxPrice } = useFilter()
+  const { products, currentPage, setCurrentPage, itemsPerPage, totalProducts } =
+    useProduct()
   const [filter, setFilter] = useState("all")
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  const filteredProducts = useGetFilteredProduct(filter)
 
-  const totalProducts = 100
+  const filteredProducts = useFilteredProducts({
+    products,
+    searchQuery,
+    selectedCategory,
+    minPrice,
+    maxPrice,
+    filter,
+  })
+
+  console.log(filteredProducts)
+
   const totalPages = Math.ceil(totalProducts / itemsPerPage)
   const paginationRange = usePagination({ currentPage, totalPages })
 
@@ -84,7 +96,6 @@ const MainContent = () => {
           </button>
 
           <div className='flex flex-wrap justify-center'>
-            {/* Pagination button */}
             {paginationRange.map((page) => (
               <button
                 key={page}

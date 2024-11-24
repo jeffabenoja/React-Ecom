@@ -1,13 +1,15 @@
 import { useMemo } from "react"
-import { useFilter } from "../context/FilterContext"
-import useProduct from "./useFetchProduct"
+import { FilteredProductProps } from "../utils/ProductTypes"
 
-const useGetFilteredProduct = (filter: string) => {
-  const { searchQuery, selectedCategory, minPrice, maxPrice } = useFilter()
-  const { products } = useProduct()
-
-  // Use useMemo to recalculate filtered products only when dependencies change
-  const filteredProducts = useMemo(() => {
+const useFilteredProducts = ({
+  products,
+  searchQuery,
+  selectedCategory,
+  minPrice,
+  maxPrice,
+  filter,
+}: FilteredProductProps) => {
+  return useMemo(() => {
     let filtered = products
 
     // Filter by category
@@ -45,9 +47,7 @@ const useGetFilteredProduct = (filter: string) => {
       default:
         return filtered
     }
-  }, [products, selectedCategory, minPrice, maxPrice, searchQuery, filter]) // Dependencies
-
-  return filteredProducts
+  }, [products, searchQuery, selectedCategory, minPrice, maxPrice, filter])
 }
 
-export default useGetFilteredProduct
+export default useFilteredProducts
