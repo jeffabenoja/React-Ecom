@@ -1,13 +1,13 @@
 import SideBar from "../components/SideBar"
-import MainContent from "../components/MainContent"
+
+import { Outlet } from "react-router-dom"
 
 const MainLayout = () => {
   return (
     <div className='flex h-screen'>
       <SideBar />
-      <div className='rounded w-full flex justify-between flex-wrap'>
-        <MainContent />
-      </div>
+
+      <Outlet />
     </div>
   )
 }
